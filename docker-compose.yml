@@ -1,0 +1,36 @@
+# version: '3.9'
+
+services:
+  # postgres:
+  #   image: postgres:15
+  #   container_name: clipurl-postgres
+  #   restart: always
+  #   environment:
+  #     POSTGRES_USER: clipuser
+  #     POSTGRES_PASSWORD: clippass
+  #     POSTGRES_DB: clipdb
+  #   volumes:
+  #     - pgdata:/var/lib/postgresql/data
+  #   ports:
+  #     - "5432:5432"
+
+  url-service:
+    build: ./url-service
+    container_name: clipurl-url-service
+    # depends_on:
+    #   - postgres
+    environment:
+      DATABASE_URL: postgres://clipuser:clippass@postgres:5432/clipdb
+    ports:
+      - "8001:8000"
+
+  api-gateway:
+    build: ./api-gateway
+    container_name: clipurl-api-gateway
+    depends_on:
+      - url-service
+    ports:
+      - "8000:8000"
+
+volumes:
+  pgdata:
