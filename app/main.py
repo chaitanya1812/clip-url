@@ -1,4 +1,5 @@
 from fastapi import FastAPI, HTTPException
+from fastapi.staticfiles import StaticFiles
 from app.api.routes import router as api_router
 from app.core.routes import router as core_router
 from fastapi.responses import FileResponse, RedirectResponse
@@ -6,7 +7,6 @@ from pydantic import BaseModel
 import os
 from contextlib import asynccontextmanager
 from app.core.db import *
-
 from app.core.logic import *
 
 @asynccontextmanager
@@ -20,9 +20,16 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(title="ClipURL", lifespan=lifespan)
 
+# @app.get("/")
+# def root():
+#     return {"message": "Welcome to ClipURL"}
+
+# Serve /static/ folder
+app.mount("/static", StaticFiles(directory="app/static"), name="static")
+
 @app.get("/")
-def root():
-    return {"message": "Welcome to ClipURL"}
+def frontend():
+    return FileResponse("app/static/index.html")
 
 @app.get("/favicon.ico")
 async def favicon():

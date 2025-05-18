@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>clip-url</title>
+  <style>
+    body { font-family: sans-serif; padding: 2rem; }
+    input, button { padding: 0.5rem; font-size: 1rem; }
+    .short-url { margin-top: 1rem; font-weight: bold; color: green; }
+  </style>
+</head>
+<body>
+  <h1>URL Shortener</h1>
+  <input type="text" id="originalUrl" placeholder="Enter URL to shorten" size="50"/>
+  <button onclick="shortenUrl()">Shorten</button>
+
+  <div id="result" class="short-url"></div>
+
+  <script>
+    async function shortenUrl() {
+      const urlInput = document.getElementById("originalUrl");
+      const resultDiv = document.getElementById("result");
+
+      const res = await fetch("/shorten", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ original_url: urlInput.value })
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        resultDiv.innerHTML = `Shortened URL: <a href="${data.shortened_url}" target="_blank">${data.shortened_url}</a>`;
+      } else {
+        resultDiv.textContent = `Error: ${data.detail || 'Failed to shorten URL'}`;
+      }
+    }
+  </script>
+</body>
+</html>
